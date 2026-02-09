@@ -65,7 +65,16 @@ oc_funding <- oc_funding %>%
     oc_funding_start_at = collective_created_at,
     oc_funding_amount = total_donations,
     oc_funding_currency = currency
+  ) %>%
+  mutate(
+    oc_funding_start_at = as_date(oc_funding_start_at)
   )
+
+### prepro repos. 
+## first i keep only the ones who will go into the experiment 
+
+repos <- repos %>%
+  filter(repo_group_id != 203)
 
 repos_with_funding <- repos %>% left_join(
   oc_funding,
@@ -73,3 +82,5 @@ repos_with_funding <- repos %>% left_join(
 
 repos_with_funding <- repos_with_funding %>% 
   left_join(sta_funding) 
+
+write_csv(repos_with_funding, "data/proc/experiment_repos_with_funding.csv")
