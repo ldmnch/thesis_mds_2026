@@ -4477,7 +4477,6 @@ github.com/formium/formik,"criticality_score:0.685590,num_dependents_deps.dev:30
 github.com/formium/tsdx,"criticality_score:0.550340,num_dependents_deps.dev:18",0.55034,,0,https://github.com/formium/tsdx,203
 github.com/formtastic/formtastic,criticality_score:0.578120,0.57812,,0,https://github.com/formtastic/formtastic,203
 github.com/fortio/fortio,"criticality_score:0.552190,num_dependents_deps.dev:20",0.55219,,0,https://github.com/fortio/fortio,203
-github.com/fortran-lang/stdlib,criticality_score:0.509720,0.50972,104.0,1,https://github.com/fortran-lang/stdlib,203
 github.com/forwardemail/email-templates,criticality_score:0.520100,0.5201,,0,https://github.com/forwardemail/email-templates,203
 github.com/fossar/selfoss,criticality_score:0.537320,0.53732,,0,https://github.com/fossar/selfoss,203
 github.com/fossasia/codeheat.org,criticality_score:0.506960,0.50696,,0,https://github.com/fossasia/codeheat.org,203
@@ -8191,8 +8190,6 @@ github.com/pwndbg/pwndbg,criticality_score:0.519310,0.51931,,0,https://github.co
 github.com/pwr-Solaar/Solaar,criticality_score:0.616800,0.6168,,0,https://github.com/pwr-Solaar/Solaar,203
 github.com/pwsafe/pwsafe,criticality_score:0.687310,0.68731,,0,https://github.com/pwsafe/pwsafe,203
 github.com/pybind/pybind11,criticality_score:0.696860,0.69686,,0,https://github.com/pybind/pybind11,203
-github.com/pyca/cryptography,"criticality_score:0.708000,num_dependents_deps.dev:0",0.708,101.0,1,https://github.com/pyca/cryptography,203
-github.com/pyca/pyopenssl,criticality_score:0.584250,0.58425,101.0,1,https://github.com/pyca/pyopenssl,203
 github.com/pycaret/pycaret,criticality_score:0.567520,0.56752,,0,https://github.com/pycaret/pycaret,203
 github.com/pycurl/pycurl,criticality_score:0.512130,0.51213,,0,https://github.com/pycurl/pycurl,203
 github.com/pydanny/cookiecutter-django,criticality_score:0.681100,0.6811,,0,https://github.com/pydanny/cookiecutter-django,203
@@ -8789,7 +8786,6 @@ github.com/ruby/setup-ruby,criticality_score:0.606140,0.60614,,0,https://github.
 github.com/ruby/spec,criticality_score:0.708320,0.70832,,0,https://github.com/ruby/spec,203
 github.com/ruby/www.ruby-lang.org,criticality_score:0.598350,0.59835,,0,https://github.com/ruby/www.ruby-lang.org,203
 github.com/rubyconfig/config,criticality_score:0.525390,0.52539,,0,https://github.com/rubyconfig/config,203
-github.com/rubygems/rubygems.org,criticality_score:0.636090,0.63609,102.0,1,https://github.com/rubygems/rubygems.org,203
 github.com/rubyide/vscode-ruby,criticality_score:0.495120,0.49512,,0,https://github.com/rubyide/vscode-ruby,203
 github.com/rubysec/bundler-audit,criticality_score:0.577770,0.57777,,0,https://github.com/rubysec/bundler-audit,203
 github.com/rubysec/ruby-advisory-db,criticality_score:0.514330,0.51433,,0,https://github.com/rubysec/ruby-advisory-db,203

@@ -4476,7 +4476,6 @@ https://github.com/formium/formik,203
 https://github.com/formium/tsdx,203
 https://github.com/formtastic/formtastic,203
 https://github.com/fortio/fortio,203
-https://github.com/fortran-lang/stdlib,203
 https://github.com/forwardemail/email-templates,203
 https://github.com/fossar/selfoss,203
 https://github.com/fossasia/codeheat.org,203
@@ -8190,8 +8189,6 @@ https://github.com/pwndbg/pwndbg,203
 https://github.com/pwr-Solaar/Solaar,203
 https://github.com/pwsafe/pwsafe,203
 https://github.com/pybind/pybind11,203
-https://github.com/pyca/cryptography,203
-https://github.com/pyca/pyopenssl,203
 https://github.com/pycaret/pycaret,203
 https://github.com/pycurl/pycurl,203
 https://github.com/pydanny/cookiecutter-django,203
@@ -8788,7 +8785,6 @@ https://github.com/ruby/setup-ruby,203
 https://github.com/ruby/spec,203
 https://github.com/ruby/www.ruby-lang.org,203
 https://github.com/rubyconfig/config,203
-https://github.com/rubygems/rubygems.org,203
 https://github.com/rubyide/vscode-ruby,203
 https://github.com/rubysec/bundler-audit,203
 https://github.com/rubysec/ruby-advisory-db,203
