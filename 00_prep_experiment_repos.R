@@ -83,4 +83,24 @@ repos_with_funding <- repos %>% left_join(
 repos_with_funding <- repos_with_funding %>% 
   left_join(sta_funding) 
 
+# add a column "non free" if the repo owner contains: google, aws, databricks or facebook 
+
+repos_with_funding <- repos_with_funding %>%
+  mutate(
+    private_owned = if_else(
+      str_detect(owner, "google|aws|databricks|facebook|microsoft"),
+      "private_owned",
+      "non_private"
+    ),
+    funding = if_else(
+      !is.na(oc_funding_amount) | !is.na(sta_funding_amount)| private_owned == "private_owned",
+      TRUE,
+      FALSE
+    )
+  )
+
+repos_with_funding %>%
+  group_by(funding) %>%
+  summarise(count = n())
+
 write_csv(repos_with_funding, "data/proc/experiment_repos_with_funding.csv")
