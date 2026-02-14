@@ -23,7 +23,7 @@ issue_resolution_duration <- issues %>%
     floor_month = as.Date(floor_date(created_at, "quarter")),
     time_to_close = as.numeric(difftime(closed_at, created_at, units = "days"))
   ) %>%
-  filter(year(floor_month) > 2015 & year(floor_month) < 2026) %>%
+  filter(year(floor_month) > 2010 & year(floor_month) < 2026) %>%
   group_by(repo_sha_id, floor_month) %>%
   summarise(
     time_to_close = median(time_to_close, na.rm = TRUE), 
@@ -68,10 +68,10 @@ issue_resolution_duration <- issue_resolution_duration %>%
 
 # get outlier units
 
-issue_resolution_duration <- issue_resolution_duration %>%
-  group_by(repo_sha_id) %>%
-  mutate(median_time_to_close = median(time_to_close, na.rm = TRUE)) %>%
-  filter(median_time_to_close < 2000) 
+#issue_resolution_duration <- issue_resolution_duration %>%
+#  group_by(repo_sha_id) %>%
+#  mutate(median_time_to_close = median(time_to_close, na.rm = TRUE)) %>%
+#  filter(median_time_to_close < 2000) 
 
 #Check for time-varying treatment
 issue_resolution_duration %>%
@@ -84,8 +84,8 @@ issue_resolution_duration %>%
   summarise(min_date = min(floor_month), max_date = max(floor_month))
 
 ggplot(issue_resolution_duration, aes(x = time_period, y = time_to_close/n_issues, color = factor(treated))) +
-#  geom_line(stat = "summary", fun = "median") +
-  geom_smooth()+
+  geom_line(stat = "summary", fun = "median") +
+#  geom_smooth()+
   labs(title = "Average Time to Close Issues Over Time by Treatment Group",
        x = "Month",
        y = "Average Time to Close (days)",
@@ -116,11 +116,11 @@ out <- gsynth(
   data = issue_resolution_duration,
   index = c("repo_sha_id", "time_period"), 
   force = "two-way", 
-  r = c(0, 10), 
+  r = c(0, 3), 
   CV = TRUE,  
   se = TRUE, 
   na.rm = TRUE,  # Let gsynth handle NAs
-  min.T0 = 12,  # Require at least 12 pre-treatment periods
+  #min.T0 = 10,  # Require at least 12 pre-treatment periods
   nboots = 100, # Increased for better inference
   parallel = TRUE # Set to TRUE if you have multiple cores to save time
   )
@@ -131,5 +131,6 @@ plot(out, main = "Estimated ATT")
 plot(out, type = "raw")
 
 plot(out, type = "loadings")
+
 
 
