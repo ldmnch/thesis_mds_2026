@@ -2,7 +2,10 @@ library(tidyverse)
 library(dotenv)
 library(readxl)
 library(lubridate)
-library(zoo)
+library(augsynth)
+library(gsynth)
+library(panelView)
+
 
 # load functions from another code module in r
 source("src/setup.R")
@@ -51,17 +54,20 @@ releases_frequency <- releases_frequency %>%
            repo_group_id < 200 & floor_month > sta_end_date ~ 1L,
            TRUE ~ 0L),
          oc_funding = case_when(
-           floor_month < oc_funding_start_at ~ 0L,
-           floor_month >= oc_funding_start_at & floor_month <= oc_funding_start_at ~ 1L,
-           floor_month > oc_funding_start_at ~ 1L,
-           TRUE ~ 0L)
+           is.na(oc_funding_start_at) ~ 0L,
+           floor_month >= oc_funding_start_at ~ 1L,
+           TRUE ~ 0L 
+         )
          )
 
+releases_frequency %>%
+  group_by(oc_funding) %>%
+  summarise(n=n())
 
 ggplot(releases_frequency, aes(x = floor_month, y = release, color = as.factor(treated))) +
-  stat_summary(fun = "mean", geom = "line") + # Shows % of repos active each quarter
+  stat_summary(fun = "mean", geom = "line") + 
   facet_wrap(~ treated) +
-  labs(title = "Proportion of Active Repositories", y = "Activity Rate (0 to 1)") +
+  labs(title = "Release Probability", y = "Probability of New Release (0 to 1)") +
   theme_minimal()
 
 
@@ -76,11 +82,7 @@ releases_frequency %>%
   summarise(min_date = min(floor_month), max_date = max(floor_month))
 
 
-library(gsynth)
-library(augsynth)
-library(panelView)
-
-panelview(release ~ period_treated,
+panelview(release ~ period_treated + oc_funding,
           data = releases_frequency,
           index = c("repo_sha_id", "time_period"),
           pre.post = TRUE)
@@ -88,17 +90,18 @@ panelview(release ~ period_treated,
 releases_frequency$repo_sha_id <- as.factor(releases_frequency$repo_sha_id)
 releases_frequency$floor_month <- as.factor(releases_frequency$floor_month)
 
+
 out <- gsynth(
-  formula = release ~ period_treated + oc_funding_time, 
+  formula = release ~ period_treated, 
   data = releases_frequency,
   index = c("repo_sha_id", "time_period"), 
   force = "two-way", 
-  r = c(0, 10), 
+  r = c(0, 1),
   CV = TRUE,  
   inference = "parametric",
   se = TRUE, 
   na.rm = TRUE, 
-  #min.T0 = 12,
+  min.T0 = 12,
   nboots = 100,
   parallel = TRUE 
 )
@@ -106,9 +109,6 @@ out <- gsynth(
 out 
 plot(out, type = "counterfactual", main = "Counterfactuals (MC)")
 plot(out, main = "Estimated ATT")
-
-# Extract the ATT by period results
-library(ggplot2)
 
 # Extract the ATT vector and convert to data frame
 att_results <- out$att
@@ -138,16 +138,10 @@ ggplot(plot_data, aes(x = Time, y = Estimate)) +
        y = "Average Treatment Effect") +
   theme_minimal()
 
-#  Run Augsynth 
-library(augsynth)
-
-
-syn <- augsynth(release ~ period_treated, 
-                unit = repo_sha_id, 
-                time = time_period, 
-                data = releases_frequency,
-                progfunc = "ridge", # Common choice for high-dimensional controls
-                scm = TRUE)
+syn <- multisynth(release ~ period_treated | oc_funding, 
+                  unit = repo_sha_id, 
+                  time = time_period, 
+                  data = releases_frequency)
 
 summary(syn)
 

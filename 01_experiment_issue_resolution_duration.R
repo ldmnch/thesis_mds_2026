@@ -9,8 +9,8 @@ source("src/setup.R")
 
 repos <- read_csv("data/proc/experiment_repos_with_funding.csv")
 
-repos <- repos %>%
-  filter(repo_group_id %in% c(105, 102, 204))
+#repos <- repos %>%
+#  filter(repo_group_id %in% c(105, 102, 204))
 
 issues <- as_tibble(tbl(con, Id(schema = "public", table = "issues")))
 
