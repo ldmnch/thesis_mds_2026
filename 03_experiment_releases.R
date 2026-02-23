@@ -21,7 +21,7 @@ releases %>%
 
 releases_frequency <- releases %>%
   mutate(
-    floor_month = as.Date(floor_date(published_at, "quarter")),
+    floor_month = as.Date(floor_date(published_at, "month")),
   ) %>%
   filter(year(floor_month) > 2019) %>%
   group_by(repo_sha_id, floor_month) %>%
@@ -34,7 +34,6 @@ releases_frequency <- releases_frequency %>%
   complete(repo_sha_id, floor_month, fill = list(n_releases = 0)) %>%
   mutate(release = ifelse(n_releases > 0, 1, 0)) %>%
   inner_join(repos, by = c("repo_sha_id" = "sha_id")) %>%
-  #create time period col grouping by repo_sha_id
   mutate(time_period = as.numeric(as.factor(floor_month))) %>%
   filter(private_owned == "non_private")
 
@@ -53,10 +52,9 @@ releases_frequency <- releases_frequency %>%
            repo_group_id < 200 & floor_month >= sta_start_date & floor_month <= sta_end_date ~ 1L,
            repo_group_id < 200 & floor_month > sta_end_date ~ 1L,
            TRUE ~ 0L),
-         oc_funding = case_when(
-           is.na(oc_funding_start_at) ~ 0L,
-           floor_month >= oc_funding_start_at ~ 1L,
-           TRUE ~ 0L 
+         oc_funding = if_else(
+           !is.na(oc_funding_start_at) & floor_month >= oc_funding_start_at, 
+           1L, 0L
          )
          )
 
@@ -96,14 +94,12 @@ out <- gsynth(
   data = releases_frequency,
   index = c("repo_sha_id", "time_period"), 
   force = "two-way", 
-  r = c(0, 1),
-  CV = TRUE,  
-  inference = "parametric",
+  CV = TRUE,
+  r = c(0, 1),           # Stop at 1 factor to prevent "out of bounds"
   se = TRUE, 
-  na.rm = TRUE, 
-  min.T0 = 12,
   nboots = 100,
-  parallel = TRUE 
+  parallel = TRUE,
+  min.T0 = 12            # Keep this to ensure enough pre-treatment data
 )
 
 out 
@@ -138,7 +134,7 @@ ggplot(plot_data, aes(x = Time, y = Estimate)) +
        y = "Average Treatment Effect") +
   theme_minimal()
 
-syn <- multisynth(release ~ period_treated | oc_funding, 
+syn <- multisynth(release ~ period_treated, 
                   unit = repo_sha_id, 
                   time = time_period, 
                   data = releases_frequency)
@@ -163,3 +159,4 @@ ggplot(results_avg, aes(x = Time, y = Estimate)) +
        x = "Time Since Treatment",
        y = "ATT Estimate") +
   theme_minimal()
+

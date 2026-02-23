@@ -3,6 +3,9 @@ library(dotenv)
 library(readxl)
 library(lubridate)
 library(zoo)
+library(gsynth)
+library(augsynth)
+library(panelView)
 
 # load functions from another code module in r
 source("src/setup.R")
@@ -92,10 +95,6 @@ ggplot(issue_resolution_duration, aes(x = time_period, y = time_to_close/n_issue
        color = "Treated") +
   theme_minimal()
 
-library(gsynth)
-library(augsynth)
-library(panelView)
-
 panelview(time_to_close ~ period_treated,
           data = issue_resolution_duration,
           index = c("repo_sha_id", "time_period"),
@@ -132,5 +131,40 @@ plot(out, type = "raw")
 
 plot(out, type = "loadings")
 
+issue_resolution_duration_augsynth <- issues %>%
+  filter(state == "closed") %>%
+  mutate(
+    floor_month = as.Date(floor_date(created_at, "quarter")),
+    time_to_close = as.numeric(difftime(closed_at, created_at, units = "days"))
+  ) %>%
+  filter(year(floor_month) > 2010 & year(floor_month) < 2026) %>%
+  group_by(repo_sha_id, floor_month) %>%
+  summarise(
+    time_to_close = median(time_to_close, na.rm = TRUE),
+    n_issues = n(),
+    .groups = "drop"
+  ) %>%
+  inner_join(repos, by = c("repo_sha_id" = "sha_id")) %>%
+  mutate(time_period = as.numeric(as.factor(floor_month)))%>%
+  mutate(repo_group_id = as.integer(repo_group_id),
+         treated = if_else(repo_group_id < 200, 1L, 0L),
+         period_treated = case_when(
+           repo_group_id < 200 & floor_month < sta_start_date ~ 0L,
+           repo_group_id < 200 & floor_month >= sta_start_date & floor_month <= sta_end_date ~ 1L,
+           repo_group_id < 200 & floor_month > sta_end_date ~ 1L,
+           TRUE ~ 0L),
+         oc_funding = case_when(
+           floor_month < oc_funding_start_at ~ 0L,
+           floor_month >= oc_funding_start_at & floor_month <= oc_funding_start_at ~ 1L,
+           floor_month > oc_funding_start_at ~ 1L,
+           TRUE ~ 0L)
+  )
 
-
+syn <- issue_resolution_duration_augsynth %>%
+  select(repo_sha_id, time_period, time_to_close, period_treated) %>%
+  mutate(repo_sha_id = as.integer(as.factor(repo_sha_id)),
+         time_period = as.integer(time_period)) %>%
+  multisynth(time_to_close ~ period_treated,
+             unit = repo_sha_id,
+             time = time_period,
+             data = .)
