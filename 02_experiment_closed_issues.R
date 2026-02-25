@@ -56,14 +56,16 @@ issue_status_over_time <- issue_status_over_time %>%
   group_by(repo_sha_id) %>%
   # Cumulative sum + the starting balance
   mutate(open_issues_count = initial_count + cumsum(monthly_net_change)) %>%
-  ungroup()
+  ungroup()%>%
+  mutate(
+    time_period = as.numeric(as.factor(floor_month))
+  )
 
 issue_status_over_time <- issue_status_over_time %>%
   inner_join(repos, by = c("repo_sha_id" = "sha_id")) %>%
   group_by(repo_sha_id) %>%
   mutate(
     log_n_issues_closed = log(n_issues_closed + 1),  # Add 1 to avoid log(0)
-    time_period = as.numeric(as.factor(floor_month)),
     repo_group_id = as.integer(repo_group_id),
     treated = if_else(repo_group_id < 200, 1L, 0L),
     period_treated = if_else(repo_group_id < 200 & floor_month >= sta_start_date, 1L, 0L),
@@ -124,7 +126,7 @@ out <- gsynth(
   index = c("repo_sha_id", "time_period"), 
   force = "two-way", 
   r = c(0, 5),  # Use the CV-selected r
-  CV = FALSE,        # Don't run CV again
+  CV = TRUE,        # Don't run CV again
   se = TRUE,         # Now do bootstrap
   na.rm = TRUE, 
   min.T0 = 12,

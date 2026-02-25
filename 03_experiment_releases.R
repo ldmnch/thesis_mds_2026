@@ -9,6 +9,7 @@ library(panelView)
 
 # load functions from another code module in r
 source("src/setup.R")
+source("src/model_plotting_and_formatting.R")
 
 repos <- read_csv("data/proc/experiment_repos_with_funding.csv")
 
@@ -106,57 +107,10 @@ out
 plot(out, type = "counterfactual", main = "Counterfactuals (MC)")
 plot(out, main = "Estimated ATT")
 
-# Extract the ATT vector and convert to data frame
-att_results <- out$att
-
-# Create a data frame for plotting
-plot_data <- data.frame(
-  Time = as.numeric(names(att_results)),
-  Estimate = as.numeric(att_results)
-)
-
-# Get standard errors and confidence intervals from the full output
-# These are shown in the summary but need to be extracted differently
-summary_out <- capture.output(print(out))
-
-# Alternative: Extract from the att_avg matrix that's printed
-# For now, let's plot without confidence intervals or add them manually
-
-# Basic plot
-ggplot(plot_data, aes(x = Time, y = Estimate)) +
-  geom_line() +
-  #geom_point(size = 2) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
-  geom_vline(xintercept = -0.5, linetype = "dashed", color = "blue") +
-  labs(title = "Generalized Synthetic Control: Treatment Effects Over Time",
-       subtitle = "Pre-treatment period: Time < 0 | Post-treatment period: Time ≥ 0",
-       x = "Time Relative to Treatment",
-       y = "Average Treatment Effect") +
-  theme_minimal()
+summary_effects_gsyn <- extract_effects_gsynth(out)
 
 syn <- multisynth(release ~ period_treated, 
                   unit = repo_sha_id, 
                   time = time_period, 
                   data = releases_frequency)
-
-summary(syn)
-
-# Extract results
-results <- summary(syn)$att
-
-# Extract only the "Average" level results
-results_avg <- results %>%
-  filter(Level == "Average", !is.na(Time))
-
-# Create the plot
-ggplot(results_avg, aes(x = Time, y = Estimate)) +
-  geom_line() +
-  geom_ribbon(aes(ymin = lower_bound, ymax = upper_bound), alpha = 0.2) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
-  geom_vline(xintercept = 0, linetype = "dashed", color = "blue") +
-  labs(title = "Average Treatment Effect Over Time",
-       subtitle = "Pre-treatment period: Time < 0 | Post-treatment period: Time ≥ 0",
-       x = "Time Since Treatment",
-       y = "ATT Estimate") +
-  theme_minimal()
 

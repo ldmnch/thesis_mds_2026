@@ -35,14 +35,16 @@ merged_crs <- merged_crs %>%
   # Use complete to force the full grid for EVERY repo
   complete(repo_sha_id = all_repos, floor_month = all_months, 
            fill = list(n_merged_crs = 0)) %>%
-  arrange(repo_sha_id, floor_month) 
+  arrange(repo_sha_id, floor_month) %>%
+  mutate(
+    time_period = as.numeric(as.factor(floor_month))
+  )
 
 merged_crs <- merged_crs %>%
   inner_join(repos, by = c("repo_sha_id" = "sha_id")) %>%
   group_by(repo_sha_id) %>%
   mutate(
     log_n_merged_crs = log1p(n_merged_crs),
-    time_period = as.numeric(as.factor(floor_month)),
     repo_group_id = as.integer(repo_group_id),
     treated = if_else(repo_group_id < 200, 1L, 0L),
     period_treated = if_else(repo_group_id < 200 & floor_month >= sta_start_date, 1L, 0L),

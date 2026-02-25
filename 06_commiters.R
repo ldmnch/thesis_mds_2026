@@ -41,14 +41,16 @@ contributors <- contributors_raw %>%
   # Then restrict to repos that have at least some activity (avoid ghost repos)
   group_by(repo_sha_id) %>%
   filter(sum(n_contributors) > 0) %>%
-  ungroup()
+  ungroup() %>%
+  mutate(
+    time_period = as.numeric(as.factor(floor_month))
+  )
 
 contributors <- contributors %>%
   inner_join(repos, by = c("repo_sha_id" = "sha_id")) %>%
   group_by(repo_sha_id) %>%
   mutate(
     log_contributors = log1p(n_contributors),
-    time_period = as.numeric(as.factor(floor_month)),
     repo_group_id = as.integer(repo_group_id),
     treated = if_else(repo_group_id < 200, 1L, 0L),
     period_treated = if_else(repo_group_id < 200 & floor_month >= sta_start_date, 1L, 0L),
@@ -89,10 +91,9 @@ out <- gsynth(
 )
 
 out
-plot(out, type = "counterfactual", main = "Counterfactuals (MC)")
 plot(out, main = "Estimated ATT")
 plot(out, type = "raw")
-
+plot(out, type = "factors", xlab = "Time")
 
 syn <- augsynth(log_contributors ~ period_treated | oc_funding,
                 unit = repo_sha_id,
