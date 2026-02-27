@@ -91,7 +91,12 @@ define_plot_title <- function(file_name) {
     return("Commits - GSynth")
   } else if (str_detect(file_name, "07_commits") & str_detect(file_name, "augsynth")) {
     return("Commits - AugSynth")
-  } else {
+  } else if (str_detect(file_name, "08_new_issues") & str_detect(file_name, "_gsynth")) {
+    return("New Issues - GSynth")
+  } else if (str_detect(file_name, "08_new_issues") & str_detect(file_name, "augsynth")) {
+    return("New Issues - AugSynth")
+   }
+    else {
     return("Unknown Experiment")
   }
 }
