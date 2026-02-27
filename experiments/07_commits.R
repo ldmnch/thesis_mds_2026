@@ -1,0 +1,42 @@
+experiment_name <- "07_commits"
+
+#remove scientific notation
+options(scipen = 999)
+
+commits_n <- build_experiment_panel(
+  raw_df     = load_table(con, table = "commits"),
+  repos      = load_repos(),
+  date_col   = "date",
+  target_col = "total_commits"
+)
+
+
+ggplot(commits_n, aes(x = time_period, y = total_commits, color = as.factor(treated))) +
+  geom_point() +
+  facet_wrap(~ repo_group_id) +
+  labs(title = "Contributor Absence Factor Over Time by Treatment Group",
+       x = "Quarter",
+       y = "Contributor Absence Factor",
+       color = "Treatment Group")  +
+  theme_minimal() +
+  scale_color_manual(values = c("blue", "red"), labels = c("Control", "Treated")) +
+  theme(legend.title = element_blank())
+
+
+out_gsynth <- train_gsynth_model(
+  data = commits_n, 
+  target = "log_total_commits",
+  index = c("repo_sha_id", "time_period"))
+
+commits_n_clean <- commits_n %>%
+  drop_na(size, stargazers_count)
+
+syn <- train_augsynth_model(
+  data = commits_n_clean, 
+  target = "log_total_commits",
+  unit = repo_sha_id,
+  time = time_period
+)
+
+gsyn_results <- extract_effects_gsynth(out_gsynth, experiment_name)
+augsyn_results <- extract_effects_augsynth(syn, experiment_name)
