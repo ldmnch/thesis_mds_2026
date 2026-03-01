@@ -2,12 +2,27 @@ library(tidyverse)
 
 # ── 1. Data loading ────────────────────────────────────────────────────────────
 
-load_repos <- function(path = "data/proc/experiment_repos_with_funding.csv") {
-  read_csv(path) %>% filter(repo_group_id != 104)
+load_repos <- function(path = "data/proc/experiment_repos_with_funding.csv",
+                       filter_repos = getOption("experiment_repos")) {
+  df <- read_csv(path) 
+  
+  if (!is.null(filter_repos)) {
+    df <- df %>% filter(repo %in% filter_repos | repo_group_id == 204)
+    
+    summary <- df %>%
+      group_by(repo_group_id) %>%
+      summarise(n_repos = n_distinct(repo), .groups = "drop")
+    
+    print(summary)
+  }
+  
+  df
 }
 
-load_table <- function(con, schema = "public", table) {
-  as_tibble(tbl(con, Id(schema = schema, table = table)))
+load_table <- function(con, table) {
+  as_tibble(tbl(con, Id(schema = "public", table = table))) %>%
+    #drop duplicates
+    distinct()
 }
 
 # ── 2. Core pipeline steps ─────────────────────────────────────────────────────

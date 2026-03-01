@@ -1,6 +1,10 @@
-library(ggplot2)
 library(janitor)
+library(ggplot2)
 library(writexl)
+
+# get current datetime
+
+date <- format(Sys.time(), "%Y-%m-%d_%H-%M-%S")
 
 add_p_values <- function(data) {
   # 1. Calculate the Z-score
@@ -17,7 +21,7 @@ add_p_values <- function(data) {
   return(data)
 }
 
-extract_effects_augsynth <- function(model, experiment_name) {
+extract_effects_augsynth <- function(model, experiment_name, subfolder = date) {
   # Extract the summary table
   summary_table <- summary(model)$att
   
@@ -27,12 +31,16 @@ extract_effects_augsynth <- function(model, experiment_name) {
   
   avg_results <- add_p_values(avg_results)
   
-  write_csv(avg_results,  paste0("data/final/", experiment_name,"_augsynth.csv"))
+  if (!dir.exists(paste0("data/final/", subfolder))) {
+    dir.create(paste0("data/final/", subfolder), recursive = TRUE)
+  }
+  
+  write_csv(avg_results,  paste0("data/final/", subfolder, "/", experiment_name,"_augsynth.csv"))
   
   return(avg_results)
 }
 
-extract_effects_gsynth <- function(model, experiment_name) {
+extract_effects_gsynth <- function(model, experiment_name, subfolder = date) {
   # Extract the ATT estimates and confidence intervals
   att_est <- model$est.att
   att_avg <- model$est.avg
@@ -57,10 +65,14 @@ extract_effects_gsynth <- function(model, experiment_name) {
     upper_bound = att_avg["ATT.avg", "CI.upper"]
   )
   
+  if (!dir.exists(paste0("data/final/", subfolder))) {
+    dir.create(paste0("data/final/", subfolder), recursive = TRUE)
+  }
+  
   #write an excel with two pages, one for the ATT over time and one for the average ATT
   write_xlsx(
     x = list(att_over_time = att_df, att_avg = att_avg_df), 
-    path = paste0("data/final/", experiment_name, "_gsynth.xlsx")
+    path = paste0("data/final/", subfolder, "/", experiment_name, "_gsynth.xlsx")
   )
   return(list(att_over_time = att_df, att_avg = att_avg_df))
 }

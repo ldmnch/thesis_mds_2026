@@ -7,6 +7,11 @@ source("src/build_experiment_data.R")
 source("src/model_specifications.R")
 source("src/model_plotting_and_formatting.R")
 
+options(experiment_repos = c("cryptography", "pyopenssl", "sigstore-python", "warehouse", "m2crypto",
+                                "rubygems.org", "rubygems", "bundler",
+                                "curl",
+                                "fpm", "setup-fpm", "stdlib")) 
+
 # List experiment scripts
 experiment_files <- list.files(
   "experiments",
