@@ -20,61 +20,100 @@ add_p_values <- function(data) {
   
   return(data)
 }
+# ── Helpers ───────────────────────────────────────────────────────────────────
 
-extract_effects_augsynth <- function(model, experiment_name, subfolder = date) {
-  # Extract the summary table
-  summary_table <- summary(model)$att
-  
-  avg_results <- summary_table %>%
-    filter(Level == "Average", !is.na(Time)) %>%
-    clean_names()
-  
-  avg_results <- add_p_values(avg_results)
-  
-  if (!dir.exists(paste0("data/final/", subfolder))) {
-    dir.create(paste0("data/final/", subfolder), recursive = TRUE)
-  }
-  
-  write_csv(avg_results,  paste0("data/final/", subfolder, "/", experiment_name,"_augsynth.csv"))
-  
-  return(avg_results)
+make_dir <- function(subfolder) {
+  path <- paste0("data/final/", subfolder)
+  if (!dir.exists(path)) dir.create(path, recursive = TRUE)
+  return(path)
 }
 
-extract_effects_gsynth <- function(model, experiment_name, subfolder = date) {
-  # Extract the ATT estimates and confidence intervals
+save_xlsx <- function(sheets, experiment_name, suffix, subfolder) {
+  dir_path  <- make_dir(subfolder)
+  xlsx_path <- paste0(dir_path, "/", experiment_name, "_", suffix, ".xlsx")
+  write_xlsx(x = sheets, path = xlsx_path)
+  message("Saved: ", xlsx_path)
+  return(invisible(xlsx_path))
+}
+
+# ── GSynth ────────────────────────────────────────────────────────────────────
+
+extract_att_time_gsynth <- function(model) {
   att_est <- model$est.att
-  att_avg <- model$est.avg
-  
-  # Create a data frame for ATT over time
-  att_df <- data.frame(
-    time = rownames(att_est),
-    estimate = att_est[, "ATT"],
-    p_value = att_est[, "p.value"],
-    std_error = att_est[, "S.E."],
+  data.frame(
+    time        = rownames(att_est),
+    estimate    = att_est[, "ATT"],
+    std_error   = att_est[, "S.E."],
+    p_value     = att_est[, "p.value"],
     lower_bound = att_est[, "CI.lower"],
     upper_bound = att_est[, "CI.upper"]
   )
-  
-  # Create a data frame for average ATT
-  att_avg_df <- data.frame(
-    term = "ATT.avg",
-    estimate = att_avg["ATT.avg", "Estimate"],
-    p_value = att_avg[, "p.value"],
-    std_error = att_avg["ATT.avg", "S.E."],
+}
+
+extract_att_avg_gsynth <- function(model) {
+  att_avg <- model$est.avg
+  data.frame(
+    term        = "ATT.avg",
+    estimate    = att_avg["ATT.avg", "Estimate"],
+    std_error   = att_avg["ATT.avg", "S.E."],
+    p_value     = att_avg["ATT.avg", "p.value"],
     lower_bound = att_avg["ATT.avg", "CI.lower"],
     upper_bound = att_avg["ATT.avg", "CI.upper"]
   )
-  
-  if (!dir.exists(paste0("data/final/", subfolder))) {
-    dir.create(paste0("data/final/", subfolder), recursive = TRUE)
-  }
-  
-  #write an excel with two pages, one for the ATT over time and one for the average ATT
-  write_xlsx(
-    x = list(att_over_time = att_df, att_avg = att_avg_df), 
-    path = paste0("data/final/", subfolder, "/", experiment_name, "_gsynth.xlsx")
+}
+
+extract_effects_gsynth <- function(model, experiment_name, subfolder = date) {
+  sheets <- list(
+    att_over_time = extract_att_time_gsynth(model),
+    att_avg       = extract_att_avg_gsynth(model)
   )
-  return(list(att_over_time = att_df, att_avg = att_avg_df))
+  save_xlsx(sheets, experiment_name, "gsynth", subfolder)
+  return(sheets)
+}
+
+# ── AugSynth ──────────────────────────────────────────────────────────────────
+
+extract_att_time_augsynth <- function(model) {
+  summary(model)$att %>%
+    filter(Level == "Average", !is.na(Time)) %>%
+    clean_names() %>%
+    add_p_values()
+}
+
+extract_l2_imbalance_multisynth <- function(model) {
+  data.frame(
+    metric = c(
+      "Global L2 Imbalance (Raw)",
+      "Global L2 Imbalance (Scaled)",
+      "Global L2 % Improvement",
+      "Individual L2 Imbalance (Raw)",
+      "Individual L2 Imbalance (Scaled)",
+      "Individual L2 % Improvement"
+    ),
+    value = c(
+      model$global_l2,
+      model$scaled_global_l2,
+      (1 - model$scaled_global_l2) * 100,
+      model$ind_l2,
+      model$scaled_ind_l2,
+      (1 - model$scaled_ind_l2) * 100
+    )
+  )
+}
+extract_effects_augsynth <- function(model, experiment_name, subfolder = date) {
+  sheets <- list(
+    att_over_time = extract_att_time_augsynth(model),
+    l2_imbalance  = extract_l2_imbalance_multisynth(model)
+  )
+  save_xlsx(sheets, experiment_name, "augsynth", subfolder)
+  
+  # Keep CSV for backwards compatibility
+  write_csv(
+    sheets$att_over_time,
+    paste0(make_dir(subfolder), "/", experiment_name, "_augsynth.csv")
+  )
+  
+  return(sheets)
 }
 
 define_plot_title <- function(file_name) {

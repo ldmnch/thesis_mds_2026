@@ -4,7 +4,7 @@ library(readxl)
 source("src/model_plotting_and_formatting.R")
 
 # Set the path to the folder containing the .csv files
-folder_path <- "data/final"
+folder_path <- "data/final/2026-03-01_12-12-41"
 # List all .csv files in the folder
 gsynth_files <- list.files(path = folder_path, pattern = "\\.xlsx$", full.names = TRUE)
 
