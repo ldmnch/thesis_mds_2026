@@ -7,13 +7,13 @@ train_gsynth_model <- function(data,
                                target, 
                                treatment = "period_treated",
                                force = "two-way", 
-                               r = c(0, 10),      # lowered from c(0, 10)
+                               r = c(0, 10),    
                                CV = TRUE, 
                                se = TRUE, 
-                               nboots = 500, 
+                               nboots = 1000, 
                                parallel = TRUE, 
                                min.T0 = 12,
-                               inference = "parametric") {  # added - more appropriate for small N
+                               inference = "parametric") {  
   
   formula <- as.formula(paste(target, "~", treatment))
   
@@ -33,7 +33,7 @@ train_gsynth_model <- function(data,
     nboots = nboots,
     parallel = parallel,
     min.T0 = min.T0,
-    inference = inference,   # parametric is safer with ~40 treated units
+    inference = inference,   
     na.rm = TRUE
   )
   
@@ -43,23 +43,44 @@ train_gsynth_model <- function(data,
 train_augsynth_model <- function(data, 
                                  target, 
                                  treatment = "period_treated",
-                                 #covariates = "oc_funding + stargazers_count + size",
                                  unit, 
-                                 time) {
+                                 time,
+                                 n_factors_range = 1:10) {
   
-  unit <- rlang::ensym(unit)
-  time <- rlang::ensym(time)
+  unit_sym <- rlang::ensym(unit)
+  time_sym <- rlang::ensym(time)
+  formula <- as.formula(paste(target, "~", treatment))
   
-  formula <- as.formula(paste(target, "~", treatment
-                              #, "|", covariates
-                              ))
+  message("Running Cross-Validation for latent factors...")
   
-  model <- multisynth(
+  # 1. Loop through the range to find IC
+  pc_results <- sapply(n_factors_range, function(f) {
+    m <- multisynth(
+      form = formula,
+      unit = !!unit_sym,
+      time = !!time_sym,
+      data = data,
+      n_factors = f
+    )
+    # Get IC from the model summary
+    return(m$params$PC) 
+  })
+  
+  # 2. Find the factor number with the MINIMUM PC
+  best_f <- n_factors_range[which.min(pc_results)]
+  message(paste("Optimal factors chosen (Min PC):", best_f))
+  
+  # 3. Re-train the final model with that factor
+  final_model <- multisynth(
     form = formula,
-    unit = !!unit,
-    time = !!time,
-    data = data
+    unit = !!unit_sym,
+    time = !!time_sym,
+    data = data,
+    n_factors = best_f
   )
   
-  return(model)
+  # Store the IC table for plotting later
+  final_model$ic_table <- data.frame(factors = n_factors_range, IC = pc_results)
+  
+  return(final_model)
 }

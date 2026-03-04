@@ -10,18 +10,6 @@ closed_issues_count <- build_experiment_panel(
   target_col = "issues_closed_n"
 )
 
-
-ggplot(closed_issues_count, aes(x = as.Date(floor_month), 
-                                      y = log_issues_closed_n,
-                                      colour = as.factor(treated))) +
-  geom_line(stat = "summary") +
-  labs(title = "N of Closed Issues by Treatment Group",
-       x = "Month",
-       y = "log N") +
-  #hide colour legend
-  guides(color = "none") +
-  theme_minimal()
-
 out_gsynth <- train_gsynth_model(
   data = closed_issues_count, 
   target = "log_issues_closed_n",
