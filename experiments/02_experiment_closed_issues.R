@@ -15,11 +15,9 @@ out_gsynth <- train_gsynth_model(
   target = "log_issues_closed_n",
   index = c("repo_sha_id", "time_period"))
 
-issue_status_clean <- closed_issues_count %>%
-  drop_na(size, stargazers_count)
-
 syn <- train_augsynth_model(
-  data = issue_status_clean, 
+  data = closed_issues_count, 
+  covariates = TRUE,
   target = "log_issues_closed_n",
   unit = repo_sha_id,
   time = time_period

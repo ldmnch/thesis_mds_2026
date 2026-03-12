@@ -32,11 +32,8 @@ out_gsynth <- train_gsynth_model(
   target = "log_n_new_prs",
   index = c("repo_sha_id", "time_period"))
 
-new_crs_frequency_clean <- new_crs_frequency %>%
-  drop_na(size, stargazers_count)
-
 syn <- train_augsynth_model(
-  data = new_crs_frequency_clean, 
+  data = new_crs_frequency, 
   target = "log_n_new_prs",
   unit = repo_sha_id,
   time = time_period

@@ -9,25 +9,16 @@ merged_crs_frequency <- build_experiment_panel(
   target_col = "n_merged_crs"
 )
 
-ggplot(merged_crs_frequency, aes(x = floor_month, y = log_n_merged_crs, color = as.factor(treated))) +
-  geom_line(stat = "summary", fun = "mean") +
-  labs(title = "Average Number of Merged PRs Over Time by Treatment Status",
-       x = "Time (Quarterly)", y = "Average Number of Merged PRs") +
-  theme_minimal() +
-  scale_color_manual(values = c("blue", "red"), labels = c("Control", "Treated")) +
-  theme(legend.title = element_blank())
-
 
 out_gsynth <- train_gsynth_model(
   data = merged_crs_frequency, 
   target = "log_n_merged_crs",
   index = c("repo_sha_id", "time_period"))
 
-merged_crs_frequency_clean <- merged_crs_frequency %>%
-  drop_na(size, stargazers_count)
 
 syn <- train_augsynth_model(
-  data = merged_crs_frequency_clean, 
+  data = merged_crs_frequency,   
+  covariates = TRUE,
   target = "log_n_merged_crs",
   unit = repo_sha_id,
   time = time_period

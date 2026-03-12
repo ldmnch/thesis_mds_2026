@@ -98,8 +98,7 @@ extract_att_time_augsynth <- function(model) {
   summary(model)$att %>%
     filter(Level == "Average", !is.na(Time)) %>%
     clean_names() %>%
-    add_p_values()
-}
+    add_p_values()}
 
 extract_l2_imbalance_multisynth <- function(model) {
   data.frame(
@@ -121,6 +120,7 @@ extract_l2_imbalance_multisynth <- function(model) {
     )
   )
 }
+
 extract_effects_augsynth <- function(model, experiment_name, subfolder = date) {
   
   counterfactuals_plot <- plot_counterfactuals_multisynth(model)

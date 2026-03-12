@@ -28,11 +28,9 @@ out_gsynth <- train_gsynth_model(
   target = "log_total_commits",
   index = c("repo_sha_id", "time_period"))
 
-commits_n_clean <- commits_n %>%
-  drop_na(size, stargazers_count)
 
 syn <- train_augsynth_model(
-  data = commits_n_clean, 
+  data = commits_n, 
   target = "log_total_commits",
   unit = repo_sha_id,
   time = time_period

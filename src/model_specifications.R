@@ -43,13 +43,25 @@ train_gsynth_model <- function(data,
 train_augsynth_model <- function(data, 
                                  target, 
                                  treatment = "period_treated",
+                                 covariates = FALSE,
+                                 covariate_str = "stargazers_count, size",
                                  unit, 
                                  time,
                                  n_factors_range = 1:10) {
   
   unit_sym <- rlang::ensym(unit)
   time_sym <- rlang::ensym(time)
+  
+  if (covariates) {
+    covariate_str <- paste(covariates, collapse = " + ")
+    formula <- as.formula(paste(target, "~", treatment, "|", covariate_str))
+    
+    data <- data %>%
+      drop_na(size, stargazers_count)
+    
+  } else {
   formula <- as.formula(paste(target, "~", treatment))
+  }
   
   message("Running Cross-Validation for latent factors...")
   

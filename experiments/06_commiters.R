@@ -40,26 +40,13 @@ contributors_n <- contributors_raw %>%
 
 
 
-ggplot(contributors_n, aes(x = as.Date(floor_month), y = log_n_contributors, color = as.factor(treated))) +
-  geom_line( stat = "summary" ) +
-  labs(title = "Average Number of Committers Over Time by Treatment Status",
-       x = "Time (Quarterly)", y = "Average Number of Committers") +
-  theme_minimal() +
-  scale_color_manual(values = c("blue", "red"), labels = c("Control", "Treated")) +
-  theme(legend.title = element_blank())
-
-
-
 out_gsynth <- train_gsynth_model(
   data = contributors_n, 
   target = "log_n_contributors",
   index = c("repo_sha_id", "time_period"))
 
-contributors_n_clean <- contributors_n %>%
-  drop_na(size, stargazers_count)
-
 syn <- train_augsynth_model(
-  data = contributors_n_clean, 
+  data = contributors_n, 
   target = "log_n_contributors",
   unit = repo_sha_id,
   time = time_period

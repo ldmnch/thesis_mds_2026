@@ -7,6 +7,7 @@ source("src/setup.R")
 
 repos <- as_tibble(tbl(con, Id(schema = "public", table = "repo_names")))
 repo_groups <- as_tibble(tbl(con, Id(schema = "public", table = "repo_groups")))
+repo_metadata <- as_tibble(tbl(con, Id(schema = "public", table = "repo_metadata")))
 
 sta_funding <- read_excel("data/raw/sta_funding_data.xlsx") 
 oc_funding <- as_tibble(tbl(con, Id(schema = "public", table = "funding_data")))
@@ -76,6 +77,10 @@ oc_funding <- oc_funding %>%
 repos <- repos %>%
   filter(repo_group_id != 203)
 
+repos %>%
+  group_by(repo_group_id) %>%
+  summarise(n = n())
+
 repos_with_funding <- repos %>% left_join(
   oc_funding,
   by = c("sha_id" = "repo_sha_id")) 
@@ -99,8 +104,15 @@ repos_with_funding <- repos_with_funding %>%
     )
   )
 
+repos_with_funding <- repos_with_funding %>%
+  left_join(repo_metadata)
+
 repos_with_funding %>%
   group_by(funding) %>%
   summarise(count = n())
+
+repos %>%
+  group_by(repo_group_id) %>%
+  summarise(n = n())
 
 write_csv(repos_with_funding, "data/proc/experiment_repos_with_funding.csv")
