@@ -44,7 +44,7 @@ train_augsynth_model <- function(data,
                                  target, 
                                  treatment = "period_treated",
                                  covariates = FALSE,
-                                 covariate_str = "stargazers_count, size",
+                                 covariate_str = "oc_funding, stargazers_count, size",
                                  unit, 
                                  time,
                                  n_factors_range = 1:10) {
