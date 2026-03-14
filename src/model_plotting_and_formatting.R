@@ -143,8 +143,6 @@ extract_effects_augsynth <- function(model, experiment_name, subfolder = date) {
 
 define_plot_title <- function(file_name, plot_type = "ATT") {
   
-  # 1. Define Lookup Table for Metrics
-  # This makes it easy to add new file codes later
   metrics <- c(
     "02_closed_issues" = "Closed Issues",
     "03_releases"      = "Releases",
@@ -155,8 +153,6 @@ define_plot_title <- function(file_name, plot_type = "ATT") {
     "08_new_issues"    = "New Issues"
   )
   
-  # 2. Extract Metric Name
-  # Find which pattern from our list exists in the filename
   metric_match <- metrics[str_detect(file_name, names(metrics))]
   metric_label <- if (length(metric_match) > 0) metric_match[1] else "Unknown"
   
@@ -167,9 +163,53 @@ define_plot_title <- function(file_name, plot_type = "ATT") {
     TRUE                              ~ "Unknown Model"
   )
   
-  # 4. Construct Final Title
-  # You can now easily inject the plot_type (Counterfactual, ATT, etc.)
   glue("{metric_label} ({plot_type}) - {model_label}")
+}
+
+compile_l2_improvement_table <- function(folder_path) {
+  
+  # Find all files ending in _augsynth.xlsx
+  files <- list.files(
+    path = folder_path,
+    pattern = "_augsynth\\.xlsx$",
+    full.names = TRUE
+  )
+  
+  if (length(files) == 0) stop("No _augsynth.xlsx files found in folder: ", folder_path)
+  
+  results <- lapply(files, function(f) {
+    
+    # Extract outcome model name from filename
+    model_name <- tools::file_path_sans_ext(basename(f))
+    model_name <- sub("_augsynth$", "", model_name)
+    
+    # Read second sheet
+    df <- read_excel(f, sheet = 2)
+    colnames(df) <- c("metric", "value")
+    
+    # Extract only the L2 % Improvement rows
+    df_filtered <- df %>%
+      filter(grepl("L2 % Improvement", metric)) %>%
+      mutate(
+        level = case_when(
+          grepl("^Global",     metric) ~ "Global L2 % Improvement",
+          grepl("^Individual", metric) ~ "Individual L2 % Improvement",
+          TRUE ~ metric
+        ),
+        model = model_name,
+        value = round(as.numeric(value), 2)
+      ) %>%
+      select(model, level, value)
+    
+    df_filtered
+  })
+  
+  # Combine and pivot wide: one row per model, columns = Global / Individual
+  combined <- bind_rows(results) %>%
+    pivot_wider(names_from = level, values_from = value) %>%
+    arrange(model)
+  
+  combined
 }
 
 plot_counterfactuals_multisynth <- function(model){
