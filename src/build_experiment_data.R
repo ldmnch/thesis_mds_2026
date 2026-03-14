@@ -117,10 +117,19 @@ build_experiment_panel <- function(raw_df, repos,
   
   log_target_col <- paste0("log_", target_col)
   
-  raw_df %>%
+  panel_df <- raw_df %>%
     aggregate_quarterly(id_col, date_col, target_col, start_date) %>%
     complete_quarterly_grid(repos, id_col, repo_id_col, target_col,
                             start_date, end_date) %>%
     remove_ghost_repos(id_col, target_col) %>%
     enrich_variables(id_col, target_col, log_target_col)
+  
+  outlier_units <- panel_df %>%
+    group_by(.data[[id_col]]) %>%
+    summarize(sd_val = sd(.data[[log_target_col]], na.rm = TRUE), .groups = "drop") %>%
+    filter(sd_val > quantile(sd_val, 0.95, na.rm = TRUE)) %>%
+    pull(all_of(id_col)) # Pull the actual IDs
+  
+  panel_df %>%
+    filter(!(.data[[id_col]] %in% outlier_units))  
 }

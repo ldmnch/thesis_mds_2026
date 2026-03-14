@@ -17,7 +17,6 @@ panelview(log_n_new_prs ~ period_treated + oc_funding,
           pre.post = TRUE, 
           type = "outcome")
 
-
 ggplot(new_crs_frequency, aes(x = floor_month, y = log_n_new_prs, color = as.factor(treated))) +
   geom_line(stat = "summary", fun = "mean") +
   labs(title = "Average Number PRs Over Time by Treatment Status",
@@ -38,6 +37,7 @@ syn <- train_augsynth_model(
   unit = repo_sha_id,
   time = time_period
 )
+
 
 gsyn_results <- extract_effects_gsynth(out_gsynth, experiment_name)
 augsyn_results <- extract_effects_augsynth(syn, experiment_name)
