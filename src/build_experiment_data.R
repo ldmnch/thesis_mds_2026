@@ -125,9 +125,10 @@ build_experiment_panel <- function(raw_df, repos,
     enrich_variables(id_col, target_col, log_target_col)
   
   outlier_units <- panel_df %>%
+    filter(treated == 0) %>%
     group_by(.data[[id_col]]) %>%
     summarize(sd_val = sd(.data[[log_target_col]], na.rm = TRUE), .groups = "drop") %>%
-    filter(sd_val > quantile(sd_val, 0.95, na.rm = TRUE)) %>%
+    filter(sd_val > quantile(sd_val, 0.98, na.rm = TRUE)) %>%
     pull(all_of(id_col)) # Pull the actual IDs
   
   panel_df %>%
