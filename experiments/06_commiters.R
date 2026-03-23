@@ -38,7 +38,7 @@ contributors_n <- contributors_raw %>%
   remove_ghost_repos("repo_sha_id", "n_contributors") %>%
   enrich_variables("repo_sha_id", "n_contributors","log_n_contributors")
 
-
+paralell_trends_plot(contributors_n, "log_n_contributors")
 
 out_gsynth <- train_gsynth_model(
   data = contributors_n, 

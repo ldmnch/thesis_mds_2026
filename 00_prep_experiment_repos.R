@@ -18,7 +18,7 @@ sta_funding <- sta_funding %>%
   mutate(
     Name = str_to_lower(Name),
     repo_group_id = as.integer(case_when(
-    str_detect(Name, "fortran") ~ 104,
+    str_detect(Name, "numfocus") ~ 104,
     str_detect(Name, "pypi") ~ 101,
     str_detect(Name, "curl") ~ 105,
     str_detect(Name, "ruby") ~ 102)),

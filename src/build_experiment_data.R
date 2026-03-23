@@ -34,7 +34,7 @@ load_table <- function(con, table) {
 #' @param target_col Name for the aggregated count column (string)
 #' @param start_date Filter events before this date
 aggregate_quarterly <- function(df, id_col, date_col, target_col,
-                                start_date = "2010-01-01") {
+                                start_date = "2015-01-01") {
   df %>%
     filter(.data[[date_col]] >= as.Date(start_date)) %>%
     mutate(floor_month = as.Date(floor_date(.data[[date_col]], "quarter"))) %>%
@@ -50,7 +50,7 @@ aggregate_quarterly <- function(df, id_col, date_col, target_col,
 #' @param target_col Count column to fill with 0s
 #' @param start_date,end_date Quarter sequence boundaries
 complete_quarterly_grid <- function(df, repos, id_col, repo_id_col, target_col,
-                                    start_date = "2010-01-01",
+                                    start_date = "2015-01-01",
                                     end_date   = "2025-12-01") {
   all_quarters <- seq(as.Date(start_date), as.Date(end_date), by = "quarter")
   
@@ -112,7 +112,7 @@ build_experiment_panel <- function(raw_df, repos,
                                    date_col,
                                    target_col,
                                    repo_id_col = "sha_id",
-                                   start_date  = "2010-01-01",
+                                   start_date  = "2015-01-01",
                                    end_date    = "2025-12-01") {
   
   log_target_col <- paste0("log_", target_col)

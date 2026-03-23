@@ -4,7 +4,7 @@ library(readxl)
 source("src/model_plotting_and_formatting.R")
 
 folder_path_root <- "data/final/"
-specific_folder_path <- "2026-03-14_16-55-58"
+specific_folder_path <- "2026-03-17_08-41-14"
 full_path <- paste0(folder_path_root, specific_folder_path)
 
 table <- compile_l2_improvement_table(full_path) 

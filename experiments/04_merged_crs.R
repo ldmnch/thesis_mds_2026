@@ -9,6 +9,7 @@ merged_crs_frequency <- build_experiment_panel(
   target_col = "n_merged_crs"
 )
 
+paralell_trends_plot(merged_crs_frequency, "log_n_merged_crs")
 
 out_gsynth <- train_gsynth_model(
   data = merged_crs_frequency, 

@@ -7,16 +7,17 @@ releases_frequency <- build_experiment_panel(
   target_col = "releases_n"
 )
 
+paralell_trends_plot(releases_frequency, "releases_n")
 
 out_gsynth <- train_gsynth_model(
   data = releases_frequency, 
-  target = "log_releases_n",
+  target = "releases_n",
   index = c("repo_sha_id", "time_period"))
 
 syn <- train_augsynth_model(
   data = releases_frequency, 
   covariates = TRUE,
-  target = "log_releases_n",
+  target = "releases_n",
   unit = repo_sha_id,
   time = time_period
 )

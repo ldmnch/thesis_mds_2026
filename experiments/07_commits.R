@@ -10,17 +10,7 @@ commits_n <- build_experiment_panel(
   target_col = "total_commits"
 )
 
-
-ggplot(commits_n, aes(x = time_period, y = total_commits, color = as.factor(treated))) +
-  geom_point() +
-  facet_wrap(~ repo_group_id) +
-  labs(title = "Contributor Absence Factor Over Time by Treatment Group",
-       x = "Quarter",
-       y = "Contributor Absence Factor",
-       color = "Treatment Group")  +
-  theme_minimal() +
-  scale_color_manual(values = c("blue", "red"), labels = c("Control", "Treated")) +
-  theme(legend.title = element_blank())
+paralell_trends_plot(commits_n, "log_total_commits")
 
 
 out_gsynth <- train_gsynth_model(

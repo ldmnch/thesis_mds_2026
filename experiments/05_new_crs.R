@@ -11,20 +11,7 @@ new_crs_frequency <- build_experiment_panel(
   target_col = "n_new_prs"
 )
 
-panelview(log_n_new_prs ~ period_treated + oc_funding,
-          data = new_crs_frequency,
-          index = c("repo_sha_id", "floor_month"),
-          pre.post = TRUE, 
-          type = "outcome")
-
-ggplot(new_crs_frequency, aes(x = floor_month, y = log_n_new_prs, color = as.factor(treated))) +
-  geom_line(stat = "summary", fun = "mean") +
-  labs(title = "Average Number PRs Over Time by Treatment Status",
-       x = "Time (Quarterly)", y = "Average Number of Merged PRs") +
-  theme_minimal() +
-  scale_color_manual(values = c("blue", "red"), labels = c("Control", "Treated")) +
-  theme(legend.title = element_blank())
-
+paralell_trends_plot(new_crs_frequency, "log_n_new_prs")
 
 out_gsynth <- train_gsynth_model(
   data = new_crs_frequency, 

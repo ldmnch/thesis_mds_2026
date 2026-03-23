@@ -10,6 +10,8 @@ closed_issues_count <- build_experiment_panel(
   target_col = "issues_closed_n"
 )
 
+paralell_trends_plot(closed_issues_count, "log_issues_closed_n")
+
 out_gsynth <- train_gsynth_model(
   data = closed_issues_count, 
   target = "log_issues_closed_n",
