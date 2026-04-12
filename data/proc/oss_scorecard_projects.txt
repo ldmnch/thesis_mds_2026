@@ -12942,7 +12942,6 @@ https://github.com/cujojs/when,203
 https://github.com/cult-of-coders/redis-oplog,203
 https://github.com/cupy/cupy,203
 https://github.com/cure53/DOMPurify,203
-https://github.com/curl/curl,203
 https://github.com/curlpipe/ox,203
 https://github.com/cursive-ide/cursive,203
 https://github.com/curv3d/curv,203
@@ -16742,7 +16741,6 @@ https://github.com/forsigner/fexo,203
 https://github.com/fortanix/rust-sgx,203
 https://github.com/forter/security-101-for-saas-startups,203
 https://github.com/fortio/fortio,203
-https://github.com/fortran-lang/stdlib,203
 https://github.com/fortunejs/fortune,203
 https://github.com/forwardemail/email-templates,203
 https://github.com/forwardemail/free-email-forwarding,203
@@ -30478,9 +30476,7 @@ https://github.com/pybox2d/pybox2d,203
 https://github.com/pybrain/pybrain,203
 https://github.com/pybuilder/pybuilder,203
 https://github.com/pyca/bcrypt,203
-https://github.com/pyca/cryptography,203
 https://github.com/pyca/pynacl,203
-https://github.com/pyca/pyopenssl,203
 https://github.com/pycaret/pycaret,203
 https://github.com/pychess/pychess,203
 https://github.com/pycom/pycom-libraries,203
@@ -32339,7 +32335,6 @@ https://github.com/rubychan/coderay,203
 https://github.com/rubyconfig/config,203
 https://github.com/rubygems/gemstash,203
 https://github.com/rubygems/rubygems-mirror,203
-https://github.com/rubygems/rubygems.org,203
 https://github.com/rubyide/vscode-ruby,203
 https://github.com/rubyjs/libv8,203
 https://github.com/rubyjs/mini_racer,203
