@@ -19,10 +19,11 @@ out_gsynth <- train_gsynth_model(
 
 syn <- train_augsynth_model(
   data = closed_issues_count, 
-  covariates = TRUE,
+  covariates = FALSE,
   target = "log_issues_closed_n",
   unit = repo_sha_id,
   time = time_period
 )
+
 gsyn_results <- extract_effects_gsynth(out_gsynth, experiment_name)
 augsyn_results <- extract_effects_augsynth(syn, experiment_name)

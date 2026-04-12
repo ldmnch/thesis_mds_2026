@@ -21,6 +21,8 @@ out_gsynth <- train_gsynth_model(
 syn <- train_augsynth_model(
   data = new_issues_count, 
   target = "log_issues_new_n",
+  covariates = FALSE,
+
   unit = repo_sha_id,
   time = time_period
 )

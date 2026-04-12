@@ -22,6 +22,7 @@ out_gsynth <- train_gsynth_model(
 syn <- train_augsynth_model(
   data = commits_n, 
   target = "log_total_commits",
+  covariates = FALSE,
   unit = repo_sha_id,
   time = time_period
 )

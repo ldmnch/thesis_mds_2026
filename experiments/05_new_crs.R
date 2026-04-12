@@ -21,6 +21,7 @@ out_gsynth <- train_gsynth_model(
 syn <- train_augsynth_model(
   data = new_crs_frequency, 
   target = "log_n_new_prs",
+  covariates = FALSE,
   unit = repo_sha_id,
   time = time_period
 )

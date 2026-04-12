@@ -49,50 +49,43 @@ train_augsynth_model <- function(data,
                                  time,
                                  n_factors_range = 1:10) {
   
-  unit_sym <- rlang::ensym(unit)
-  time_sym <- rlang::ensym(time)
+  # Capture as quosures at the top level, once
+  unit_quo  <- enquo(unit)
+  time_quo  <- enquo(time)
   
-  if (covariates) {
+  if (!isFALSE(covariates)) {
     covariate_str <- paste(covariates, collapse = " + ")
     formula <- as.formula(paste(target, "~", treatment, "|", covariate_str))
-    
-    data <- data %>%
-      drop_na(size, stargazers_count)
-    
+    data <- data %>% drop_na(size, stargazers_count)
   } else {
-  formula <- as.formula(paste(target, "~", treatment))
+    formula <- as.formula(paste(target, "~", treatment))
   }
   
   message("Running Cross-Validation for latent factors...")
   
-  # 1. Loop through the range to find IC
+  # Pass quosures explicitly into the anonymous function
   pc_results <- sapply(n_factors_range, function(f) {
     m <- multisynth(
-      form = formula,
-      unit = !!unit_sym,
-      time = !!time_sym,
-      data = data,
+      form    = formula,
+      unit    = !!unit_quo,   # !! works on quosures captured by enquo()
+      time    = !!time_quo,
+      data    = data,
       n_factors = f
     )
-    # Get IC from the model summary
-    return(m$params$PC) 
+    return(m$params$PC)
   })
   
-  # 2. Find the factor number with the MINIMUM PC
   best_f <- n_factors_range[which.min(pc_results)]
   message(paste("Optimal factors chosen (Min PC):", best_f))
   
-  # 3. Re-train the final model with that factor
   final_model <- multisynth(
-    form = formula,
-    unit = !!unit_sym,
-    time = !!time_sym,
-    data = data,
+    form      = formula,
+    unit      = !!unit_quo,
+    time      = !!time_quo,
+    data      = data,
     n_factors = best_f
   )
   
-  # Store the IC table for plotting later
   final_model$ic_table <- data.frame(factors = n_factors_range, IC = pc_results)
-  
   return(final_model)
 }

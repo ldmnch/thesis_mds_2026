@@ -16,7 +16,7 @@ out_gsynth <- train_gsynth_model(
 
 syn <- train_augsynth_model(
   data = releases_frequency, 
-  covariates = TRUE,
+  covariates = FALSE,
   target = "releases_n",
   unit = repo_sha_id,
   time = time_period

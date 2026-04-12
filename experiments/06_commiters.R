@@ -48,6 +48,7 @@ out_gsynth <- train_gsynth_model(
 syn <- train_augsynth_model(
   data = contributors_n, 
   target = "log_n_contributors",
+  covariates = FALSE,
   unit = repo_sha_id,
   time = time_period
 )

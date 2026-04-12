@@ -19,7 +19,7 @@ out_gsynth <- train_gsynth_model(
 
 syn <- train_augsynth_model(
   data = merged_crs_frequency,   
-  covariates = TRUE,
+  covariates = FALSE,
   target = "log_n_merged_crs",
   unit = repo_sha_id,
   time = time_period

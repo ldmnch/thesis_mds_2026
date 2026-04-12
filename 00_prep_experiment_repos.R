@@ -75,7 +75,7 @@ oc_funding <- oc_funding %>%
 ## first i keep only the ones who will go into the experiment 
 
 repos <- repos %>%
-  filter(repo_group_id != 203)
+  filter((repo_group_id != 203 & repo %in% c('cryptography', 'pyopenssl', 'warehouse', 'sigstore-python', 'm2crypto', 'rubygems.org', 'rubygems', 'bundler', 'curl', 'stdlib', 'fpm', 'setup-fpm'))  |  repo_group_id == 204) 
 
 repos %>%
   group_by(repo_group_id) %>%
@@ -93,7 +93,7 @@ repos_with_funding <- repos_with_funding %>%
 repos_with_funding <- repos_with_funding %>%
   mutate(
     private_owned = if_else(
-      str_detect(owner, "google|aws|databricks|facebook|microsoft"),
+      str_detect(owner, "google|aws|databricks|facebook|microsoft|Azure"),
       "private_owned",
       "non_private"
     ),
@@ -102,7 +102,8 @@ repos_with_funding <- repos_with_funding %>%
       TRUE,
       FALSE
     )
-  )
+  ) %>%
+  filter(private_owned != "private_owned")
 
 repos_with_funding <- repos_with_funding %>%
   left_join(repo_metadata)
