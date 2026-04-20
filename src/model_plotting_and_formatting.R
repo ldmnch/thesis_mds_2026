@@ -42,6 +42,9 @@ paralell_trends_plot <- function(df, outcome_variable, subfolder = date) {
     filter(time_period == min(time_period))  %>%
     mutate(time_period_jitter = time_period + runif(n(), -0.2, 0.2))
   
+  plot_title <- define_plot_title(experiment_name, plot_type = "Parallel Trends")$title
+  ylabel <- define_plot_title(experiment_name, plot_type = "Parallel Trends")$label
+  
   plot <- ggplot(df, aes(x = time_period, y = .data[[outcome_variable]])) +
       geom_vline(
       data = vlines_df,
@@ -54,10 +57,9 @@ paralell_trends_plot <- function(df, outcome_variable, subfolder = date) {
         group = interaction(repo_group_id, treated),
         color = factor(treated)
       ),
-      #se = FALSE,
       alpha = 0.2,
       size = 0.8
-    ) +
+    ) 
     
     scale_color_manual(
       name = "Group",
@@ -65,9 +67,10 @@ paralell_trends_plot <- function(df, outcome_variable, subfolder = date) {
       labels = c("Control", "Treated")
     ) +
     theme_minimal() +
-    labs(title = define_plot_title(experiment_name, plot_type = "Parallel Trends"),
+    labs(title = plot_title,
          x = "Time Period (Quarterly)",
-         color = "Treated") 
+         color = "Treated",
+         y = "N (log scale)") 
   
   ggsave(
     filename = paste0(make_dir_plots(paste0(subfolder,"/descriptives")), "/", experiment_name, "_parallel_trends.png"),
@@ -197,7 +200,11 @@ define_plot_title <- function(file_name, plot_type = "ATT") {
     TRUE                              ~  file_name
   )
   
-  glue("{metric_label} ({plot_type}) - {model_label}")
+  if (plot_type == "Parallel Trends") {
+    return(list(title = glue("{metric_label} - {plot_type}"), label = glue("{metric_label}")))
+  } else {
+    return(glue("{metric_label} ({plot_type}) - {model_label}"))
+  }
 }
 
 compile_l2_improvement_table <- function(folder_path) {

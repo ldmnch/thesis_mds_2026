@@ -19,8 +19,5 @@ experiment_files <- list.files(
   full.names = TRUE
 )
 
-# remove second item from experiment_files list
-experiment_files <- experiment_files[-2]
-
 # Run them
 invisible(lapply(experiment_files, source))

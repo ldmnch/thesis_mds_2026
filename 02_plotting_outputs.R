@@ -5,7 +5,7 @@ source("src/model_plotting_and_formatting.R")
 
 # Set the path to the folder containing the .csv files
 folder_path_root <- "data/final/"
-specific_folder_path <- "2026-04-12_12-40-27"
+specific_folder_path <- "2026-04-20_13-34-11"
 full_path <- paste0(folder_path_root, specific_folder_path)
 
 # List all .csv files in the folder
