@@ -4,3 +4,4 @@ laias_thesis_scripts/Untitled-1.ipynb
 .env
 .Rhistory
 data/.DS_Store
+data/raw/sta_funding_data.xlsx
