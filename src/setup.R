@@ -28,7 +28,3 @@ con <- get_postgres_connection()
 ## set system locale in spanish
 Sys.setlocale("LC_TIME", "es_ES.UTF-8")
 
-### Colors
-
-sta_color_palette <- c("#171228", "#170843", "#969DF6", "#D2D5FA")
-sta_highlight_palette <- c("#EBEEFA", "#605DE1", "#4213C9")

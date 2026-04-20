@@ -17,7 +17,7 @@ train_gsynth_model <- function(data,
   
   formula <- as.formula(paste(target, "~", treatment))
   
-  # Safeguard: cap r max based on available control units
+  #  cap r max based on available control units
   n_control <- length(unique(data$repo_sha_id[data[[treatment]] == 0]))
   r_max <- min(r[2], floor(n_control / 5))  # rule of thumb: don't exceed N_control / 5
   r_safe <- c(r[1], max(r_max, r[1]))
@@ -49,7 +49,6 @@ train_augsynth_model <- function(data,
                                  time,
                                  n_factors_range = 1:10) {
   
-  # Capture as quosures at the top level, once
   unit_quo  <- enquo(unit)
   time_quo  <- enquo(time)
   
@@ -63,11 +62,10 @@ train_augsynth_model <- function(data,
   
   message("Running Cross-Validation for latent factors...")
   
-  # Pass quosures explicitly into the anonymous function
   pc_results <- sapply(n_factors_range, function(f) {
     m <- multisynth(
       form    = formula,
-      unit    = !!unit_quo,   # !! works on quosures captured by enquo()
+      unit    = !!unit_quo,   
       time    = !!time_quo,
       data    = data,
       n_factors = f

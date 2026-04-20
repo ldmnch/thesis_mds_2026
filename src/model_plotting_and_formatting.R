@@ -4,11 +4,8 @@ library(writexl)
 library(stringr)
 library(glue)
 
-# get current datetime
 
 date <- format(Sys.time(), "%Y-%m-%d_%H-%M-%S")
-
-# ── Helpers ───────────────────────────────────────────────────────────────────
 
 make_dir_data <- function(subfolder) {
   path <- paste0("data/final/", subfolder)
@@ -29,8 +26,7 @@ save_xlsx <- function(sheets, experiment_name, suffix, subfolder) {
   message("Saved: ", xlsx_path)
   return(invisible(xlsx_path))
 }
-
-# --- Descriptive ----
+-
 
 paralell_trends_plot <- function(df, outcome_variable, subfolder = date) {
 
@@ -257,17 +253,12 @@ plot_counterfactuals_multisynth <- function(model){
   
   syn_sum <- summary(model)
   
-  # 1. Identify treated units
   is_treated <- model$data$trt != Inf
   
-  # 2. Get the full observed series for treated units
-  # Combine X (pre-period) and y (post-period) matrices horizontally
   full_y_matrix <- cbind(model$data$X[is_treated, ], model$data$y[is_treated, ])
   
-  # 3. Calculate the average across those units for all time points
   avg_treated_y <- colMeans(full_y_matrix, na.rm = TRUE)
   
-  # 4. Create the plot_data (Now both should have 24 rows)
   att_estimates <- syn_sum$att %>% 
     filter(Level == "Average" & !is.na(Time)) %>%
     arrange(Time)
