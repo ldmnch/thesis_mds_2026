@@ -116,7 +116,7 @@ source("01_run_experiments.R")
 
 ## Python matching helpers (optional)
 
-The `python_psm_scripts/` folder contains notebooks and utilities for propensity score matching and control-list workflows. This code runs connected to the local PostgreSQL database which contains scraped data 
+The `python_psm_scripts/` folder contains notebooks and utilities for propensity score matching and control-list workflows. This code runs connected to the local PostgreSQL database which contains scraped data from Ecosyste.ms, which can be retrieved following this pipeline. 
 
 Install common Python dependencies:
 
