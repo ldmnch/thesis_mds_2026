@@ -9,7 +9,7 @@ A reproducible research pipeline to estimate how funding relates to open-source 
 
 ## What this project does
 
-The project prepares treatment/control repositories, runs multiple outcome experiments, and exports model results and plots for thesis reporting.
+The project prepares treatment/control OSS repositories, runs multiple outcome experiments, and exports model results and plots for thesis reporting.
 
 ## Why this project is useful
 
@@ -39,11 +39,11 @@ The project prepares treatment/control repositories, runs multiple outcome exper
 - R (recommended: 4.3+)
 - PostgreSQL database with the required source tables (e.g., `repo_names`, `repo_groups`, `repo_metadata`, `funding_data`, `issues`, `prs`, `releases`, `commits`)
 - (Optional) Python 3.10+ for `python_psm_scripts/`
-
+- Collected data + PostgreSQL setup followed from the [`ecosystems_data_collection`](https://github.com/ldmnch/ecosystems_data_collection) repository. 
 ### 2. Clone and enter the project
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/ldmnch/thesis_mds_2026.git
 cd thesis_mds_2026
 ```
 
@@ -116,7 +116,7 @@ source("01_run_experiments.R")
 
 ## Python matching helpers (optional)
 
-The `python_psm_scripts/` folder contains notebooks and utilities for propensity score matching and control-list workflows. This code runs connected to the local PostgreSQL database which contains scraped data from Ecosyste.ms, which can be retrieved following this pipeline. 
+The `python_psm_scripts/` folder contains notebooks and utilities for propensity score matching and control-list workflows. This code runs connected to the local PostgreSQL database which contains scraped data from [ecosyste.ms](https://ecosyste.ms/), which can be retrieved following [this pipeline](https://github.com/ldmnch/ecosystems_data_collection/blob/main/README.md). 
 
 Install common Python dependencies:
 
