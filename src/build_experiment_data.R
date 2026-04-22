@@ -1,6 +1,5 @@
 library(tidyverse)
 
-# ── 1. Data loading ────────────────────────────────────────────────────────────
 
 load_repos <- function(path = "data/proc/experiment_repos_with_funding.csv",
                        filter_repos = getOption("experiment_repos")) {
@@ -25,14 +24,6 @@ load_table <- function(con, table) {
     distinct()
 }
 
-# ── 2. Core pipeline steps ─────────────────────────────────────────────────────
-
-#' Aggregate raw events into quarterly counts
-#' @param df         Raw events table
-#' @param id_col     Repo identifier column (string)
-#' @param date_col   Event date column (string)
-#' @param target_col Name for the aggregated count column (string)
-#' @param start_date Filter events before this date
 aggregate_quarterly <- function(df, id_col, date_col, target_col,
                                 start_date = "2015-01-01") {
   df %>%
@@ -42,13 +33,6 @@ aggregate_quarterly <- function(df, id_col, date_col, target_col,
     summarise("{target_col}" := n(), .groups = "drop")
 }
 
-#' Expand to a complete quarterly grid and join repo metadata
-#' @param df         Aggregated quarterly df
-#' @param repos      Repos metadata df
-#' @param id_col     Repo identifier column in df (string)
-#' @param repo_id_col Repo identifier column in repos (string)
-#' @param target_col Count column to fill with 0s
-#' @param start_date,end_date Quarter sequence boundaries
 complete_quarterly_grid <- function(df, repos, id_col, repo_id_col, target_col,
                                     start_date = "2015-01-01",
                                     end_date   = "2025-12-01") {
@@ -74,8 +58,7 @@ remove_ghost_repos <- function(df, id_col, target_col) {
     ungroup()
 }
 
-#' Add DiD and control variables
-#' @param log_target_col Name for the log-transformed target (string)
+
 enrich_variables <- function(df, id_col, target_col, log_target_col) {
   df %>%
     group_by(.data[[id_col]]) %>%
@@ -95,18 +78,6 @@ enrich_variables <- function(df, id_col, target_col, log_target_col) {
     ungroup()
 }
 
-# ── 3. Master pipeline ─────────────────────────────────────────────────────────
-
-#' End-to-end pipeline for a single outcome variable
-#' @examples
-#' releases_frequency <- build_experiment_panel(
-#'   raw_df       = releases,
-#'   repos        = repos,
-#'   id_col       = "repo_sha_id",
-#'   date_col     = "published_at",
-#'   target_col   = "n_releases",
-#'   repo_id_col  = "sha_id"
-#' )
 build_experiment_panel <- function(raw_df, repos,
                                    id_col      = "repo_sha_id",
                                    date_col,
