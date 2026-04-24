@@ -1,4 +1,4 @@
-# OSS Funding Effects Pipeline (Thesis MDS 2026)
+# Measuring the Invisible: Evaluating the Impact of Public Funding on Open Source Software (Thesis MDS 2026)
 
 ![Research Code](https://img.shields.io/badge/status-research%20code-blue)
 ![R](https://img.shields.io/badge/language-R-276DC3)
